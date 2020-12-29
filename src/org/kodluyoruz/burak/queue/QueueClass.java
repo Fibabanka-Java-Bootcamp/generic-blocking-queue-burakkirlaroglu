@@ -9,8 +9,10 @@ public class QueueClass<T> implements QueueInterface<T> {
     public void add(T value) {
         Node<T> node = new Node<>(value);
         if(first == null){
-            first = node;
-            last = node;
+            synchronized (QueueClass.class){
+                first = node;
+                last = node;
+            }
         }else {
             last.setNextNode(node);
             last = node;
@@ -19,16 +21,24 @@ public class QueueClass<T> implements QueueInterface<T> {
 
     @Override
     public T poll() {
-        return first != null ? first.getValue() : null;
+        synchronized (QueueClass.class){
+            if(first != null){
+                return first.getValue();
+            }else {
+                return null;
+            }
+        }
     }
 
     @Override
     public T pell() {
         T value = null;
         if (first != null){
-            Node<T> node = first;
-            first = first.getNextNode();
-            value = node.getValue();
+            synchronized (QueueClass.class){
+                Node<T> node = first;
+                first = first.getNextNode();
+                value = node.getValue();
+            }
         }
         return value;
     }
